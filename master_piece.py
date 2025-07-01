@@ -59,7 +59,7 @@ for i, row in enumerate(data):
 # 4. 예를 들어, 'radius_mean'은 평균 반경을 나타내며, 이 값이 클수록 악성 종양일 가능성이 높을 수 있습니다.
 # 5. 판다스 사용시 describe() 결과에서 각 feature의 최솟값, 최댓값, 25/50/75 백분위수를 통해 값의 분포를 더 상세하게 파악할 수 있습니다.
 
-# feature_index = list(feature_names).index("mean radius")
+feature_index = list(feature_names).index("mean radius")
 radius = [row[feature_index] for row in data]
 # mean_radius = sum(radius) / len(radius)
 # min_radius, max_radius = min(radius), max(radius)
