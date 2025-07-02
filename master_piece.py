@@ -50,6 +50,40 @@ for i, row in enumerate(data):
 """
 # 1-d. 평균(mean) 관련 feature들의 기술 통계(describe)를 확인하고 주요 특징을 간단히 요약하세요
 
+""""
+print(df[mean_cols].describe())
+전체 샘플 수: 569
+Feature 개수: 30
+
+Target 분포:
+target
+양성    357
+악성    212
+Name: count, dtype: int64
+
+결측값 개수: 0
+
+평균 관련 피처 기술 통계:
+       mean radius  mean texture  mean perimeter    mean area  \
+count   569.000000    569.000000      569.000000   569.000000   
+mean     14.127292     19.289649       91.969033   654.889104   
+std       3.524049      4.301036       24.298981   351.914129   
+min       6.981000      9.710000       43.790000   143.500000   
+25%      11.700000     16.170000       75.170000   420.300000   
+50%      13.370000     18.840000       86.240000   551.100000   
+75%      15.780000     21.800000      104.100000   782.700000   
+max      28.110000     39.280000      188.500000  2501.000000   
+
+       mean smoothness  mean compactness  mean concavity  mean concave points  \
+count       569.000000        569.000000      569.000000           569.000000   
+mean          0.096360          0.104341        0.088799             0.048919   
+...
+25%         0.161900                0.057700  
+50%         0.179200                0.061540  
+75%         0.195700                0.066120  
+max         0.304000                0.097440  
+"""
+
 # [주요 특징 요약]
 # 1. 'mean' 관련 feature들은 세포의 평균적인 특성(반경, 둘레, 면적 등)을 나타냅니다.
 # - 크기관련변수(평균 반지름, 둘레, 면적)의 변동성은 상대적으로 큰편.
@@ -71,7 +105,6 @@ radius = [row[feature_index] for row in data]
 
 # ------------------------------------------------
 # 2. 데이터 시각화
-import matplotlib.pyplot as plt
 
 # texture
 feature_index_texture = list(feature_names).index("mean texture")
@@ -127,9 +160,8 @@ y = cancer.target  # 1차원 숫자 뭉치 569개
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=77
 )
-
-print("train:", len(X_train))
-print("test:", len(X_test))
+# print("train:", len(X_train))
+# print("test:", len(X_test))
 
 # 4. 모델 생성 및 테스트 결과 확인
 from sklearn.ensemble import RandomForestClassifier
@@ -155,7 +187,6 @@ from sklearn.metrics import (
 y_pred = clf.predict(X_test)  # 0/1 분류 결과
 y_proba = clf.predict_proba(X_test)[:, 1]  # 양성(1)일 확률
 
-
 # ROC 곡선과 AUC 계산
 # ROC 곡선: “확률 기준”을 달리했을 때 TPR과 FPR이 어떻게 변하는지 / AUC: 곡선 아래 면적, 1에 가까울수록 좋음
 # fpr:암아닌데 암이라고한 비율, tpr:암이라고 진짜 맞춘비율
@@ -164,13 +195,13 @@ roc_auc = auc(fpr, tpr)
 print("AUC:", roc_auc)
 
 # ROC 그래프 그리기
-# plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.2f}")
-# plt.plot([0, 1], [0, 1], "--")  # 대각선
-# plt.xlabel("FPR")  # 거짓 양성 비율
-# plt.ylabel("TPR")  # 참 양성 비율
-# plt.title("ROC Curve")
-# plt.legend(loc="lower right")
-# plt.show()
+plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.2f}")
+plt.plot([0, 1], [0, 1], "--")  # 대각선
+plt.xlabel("FPR")  # 거짓 양성 비율
+plt.ylabel("TPR")  # 참 양성 비율
+plt.title("ROC Curve")
+plt.legend(loc="lower right")
+plt.show()
 
 # 정확도(Accuracy): 맞춘 비율(accuracy)을 계산
 acc = accuracy_score(y_test, y_pred)
@@ -178,7 +209,6 @@ print("정확도:", acc)
 
 # 혼동 행렬(Confusion Matrix)
 # 왼쪽 위: 진짜 악성을 악성이라 맞춘 갯수 / 오른쪽 아래: 진짜 양성을 양성이라 맞춘 갯수 / 나머지는 “틀린 경우”
-
 cm = confusion_matrix(y_test, y_pred)
 print("혼동 행렬:\n", cm)
 # TP  FN
@@ -188,11 +218,9 @@ print("혼동 행렬:\n", cm)
 # FN (False Negative): 실제 암인데 암 아니라고 예측한 개수
 # TP (True Positive): 실제 암인데 암이라고 예측한 개수
 
-
 # 분류 리포트(Classification Report)
 # Precision(정밀도): “양성이라고 한 것 중 옳은 비율” / Recall(재현율): “진짜 양성 중 맞춘 비율” / F1-score: 두 개를 섞은 종합 점수
 print("분류 리포트:\n", classification_report(y_test, y_pred))
-
 
 # 5. 하이퍼 파라미터 튜닝
 from sklearn.ensemble import RandomForestClassifier
@@ -206,7 +234,7 @@ from sklearn.model_selection import GridSearchCV
 param_grid = {
     "n_estimators": list(range(1, 100, 20)),  # 숲 속 나무 개수 옵션
     "max_depth": list(range(1, 10, 2)),  # 나무의 최대 깊이 옵션
-    "min_samples_split": list(range(1, 10, 2)),  # 가지를 나눌 최소 샘플 개수 옵션
+    # "min_samples_split": list(range(1, 10, 2)),  # 가지를 나눌 최소 샘플 개수 옵션
 }
 
 """
@@ -253,9 +281,8 @@ grid.fit(X_train, y_train)
 print("최적 하이퍼파라미터:", grid.best_params_)
 print("최고 CV 정확도    :", grid.best_score_)
 
-
 """
-    # RandomizedSearchCV
+# RandomizedSearchCV
 from sklearn.model_selection import RandomizedSearchCV
 
 model = RandomForestClassifier()
