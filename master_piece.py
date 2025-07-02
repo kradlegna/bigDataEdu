@@ -204,9 +204,9 @@ from sklearn.model_selection import GridSearchCV
 
 # 우리가 비교해 볼 옵션(하이퍼파라미터) 딕셔너리 만들기
 param_grid = {
-    "n_estimators": [10, 50, 100],  # 숲 속 나무 개수 옵션
-    "max_depth": [None, 5, 10],  # 나무의 최대 깊이 옵션
-    "min_samples_split": [2, 5, 10],  # 가지를 나눌 최소 샘플 개수 옵션
+    "n_estimators": list(range(1, 100, 20)),  # 숲 속 나무 개수 옵션
+    "max_depth": list(range(1, 10, 2)),  # 나무의 최대 깊이 옵션
+    "min_samples_split": list(range(1, 10, 2)),  # 가지를 나눌 최소 샘플 개수 옵션
 }
 
 """
@@ -331,6 +331,11 @@ y_proba_best = best_clf.predict_proba(X_test)[:, 1]
 # 2) FPR(False Positive Rate)과 TPR(True Positive Rate) 계산
 fpr_base, tpr_base, _ = roc_curve(y_test, y_proba_base)
 fpr_best, tpr_best, _ = roc_curve(y_test, y_proba_best)
+
+plt.scatter(fpr_best, tpr_best)
+plt.title("ROC curve")
+plt.xlabel("FPR(Fall-out)")
+plt.ylabel("TPR(Recall)")
 
 # 3) 그래프에 두 ROC curve 그리기
 plt.plot(fpr_base, tpr_base, label="base model ROC")
