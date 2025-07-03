@@ -3,7 +3,6 @@
 from collections import defaultdict
 
 import matplotlib.pyplot as plt
-import numpy as np
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
@@ -20,17 +19,35 @@ cancer = load_breast_cancer()
 X = cancer.data
 y = cancer.target
 feature_names = cancer.feature_names
+num_features = len(feature_names)
+num_samples = len(X)
+
 
 # 1-a. 샘플 수 및 특성 수 확인
 print("전체 샘플 수:", X.shape[0])
 print("특성 수:", X.shape[1])
 
 # 1-b. 라벨 분포 확인 (0: malignant, 1: benign)
-unique, counts = np.unique(y, return_counts=True)
-print("Target 분포:", dict(zip(unique, counts)))
+target = load_breast_cancer().target
+counts = {0: 0, 1: 0}
+for t in target:
+    counts[t] += 1
+
+print(f"malignant (0) 샘플 개수: {counts[0]}")
+print(f"benign (1) 샘플 개수: {counts[1]}")
+print(
+    f"총합(샘플 수): {counts[0] + counts[1]} (전체 샘플 수 num_samples = {num_samples})"
+)
 
 # 1-c. 결측값 확인
-if np.isnan(X).any():
+missing_count = 0
+for row in cancer.data:
+    for x in row:
+        if x is None:
+            found_missing = True
+            missing_count += 1
+
+if missing_count != 0:
     print("결측값 존재")
 else:
     print("결측값 없음")
@@ -38,9 +55,11 @@ else:
 # 1-d. mean 관련 feature 요약 (예: mean radius)
 radius_idx = list(feature_names).index("mean radius")
 radius = X[:, radius_idx]
-print("mean radius 평균:", np.mean(radius))
-print("mean radius 최소값:", np.min(radius))
-print("mean radius 최대값:", np.max(radius))
+mean_radius = sum(radius) / len(radius)
+min_radius, max_radius = min(radius), max(radius)
+print("mean radius 평균:", mean_radius)
+print("mean radius 최소값:", min_radius)
+print("mean radius 최대값:", max_radius)
 
 # 2. 데이터 시각화
 texture_idx = list(feature_names).index("mean texture")
@@ -116,7 +135,7 @@ grid.fit(X_train, y_train)
 print("최적 하이퍼파라미터 (Grid):", grid.best_params_)
 print("최고 CV 정확도 (Grid):", grid.best_score_)
 
-# 6. 하이퍼파라미터 튜닝 (RandomizedSearchCV)
+# 5. 하이퍼파라미터 튜닝 (RandomizedSearchCV)
 param_dist = {
     "n_estimators": [50, 100, 200],
     "max_depth": [None, 5, 10, 20],
@@ -138,7 +157,7 @@ random_search.fit(X_train, y_train)
 print("최적 하이퍼파라미터 (Randomized):", random_search.best_params_)
 print("최고 CV 정확도 (Randomized):", random_search.best_score_)
 
-# 7. 튜닝 전/후 모델 성능 비교
+# 6. 튜닝 전/후 모델 성능 비교
 print("=== 튜닝 전 모델 ===")
 y_pred_base = base_clf.predict(X_test)
 print("정확도:", accuracy_score(y_test, y_pred_base))
@@ -152,7 +171,7 @@ print("정확도:", accuracy_score(y_test, y_pred_best))
 print("혼동 행렬:\n", confusion_matrix(y_test, y_pred_best))
 print("분류 리포트:\n", classification_report(y_test, y_pred_best))
 
-# 8. ROC curve 시각화
+# 7. ROC curve 시각화
 plt.plot(
     *roc_curve(y_test, base_clf.predict_proba(X_test)[:, 1])[:2], label="Base Model"
 )
@@ -162,18 +181,24 @@ plt.plot(
 plt.plot([0, 1], [0, 1], "--", label="Random")
 plt.xlabel("FPR")
 plt.ylabel("TPR")
-plt.title("ROC Curve Comparison")
+plt.title("7-a. ROC Curve Comparison")
 plt.legend(loc="lower right")
 plt.show()
 
-# 9. Feature Importance 시각화
-importances = best_clf.feature_importances_
-indices = np.argsort(importances)[-10:][::-1]
-labels = [feature_names[i] for i in indices]
-values = importances[indices]
 
-plt.figure(figsize=(8, 5))
-plt.barh(labels[::-1], values[::-1])
-plt.xlabel("Importance")
-plt.title("Top 10 Important Features")
+# 8-a. feature의 중요도를 추출하세요
+importances = best_clf.feature_importances_  # 숫자들
+names = list(feature_names)  # 예: ["mean radius", "mean texture", ...]
+feat_imp_pairs = list(zip(names, importances))
+feat_imp_pairs.sort(key=lambda x: x[1], reverse=True)
+top10 = feat_imp_pairs[:10]
+labels = [name for name, imp in top10]
+values = [imp for name, imp in top10]
+
+# 8-b. 상위 10개의 중요 feature를 수평 막대 그래프로 시각화하세요 (x축: 중요도 / y축: feature 이름)
+# 4) 수평 막대그래프로 시각화
+plt.figure(figsize=(6, 4))
+plt.barh(labels[::-1], values[::-1])  # 뒤집어서 가장 중요한 게 위에 오도록
+plt.xlabel("Feature importance")
+plt.title("Top 10 Important Feature")
 plt.show()

@@ -11,8 +11,8 @@ feature_names = cancer.feature_names
 data = load_breast_cancer().data
 num_samples = len(data)  # 569
 num_features = len(data[0])  # 30
-# print(f"전체 샘플 수: {num_samples}")
-# print(f"feature 수: {num_features}")
+print(f"전체 샘플 수: {num_samples}")
+print(f"feature 수: {num_features}")
 
 # 1-b. Target 라벨(양성/악성)의 분포를 확인하세요
 # 일반적으로는 malignant가 positive, 1로 표기되는데 여기에서는 benign이 1로 표기됨
@@ -20,9 +20,11 @@ target = load_breast_cancer().target
 counts = {0: 0, 1: 0}
 for t in target:
     counts[t] += 1
-# print(f"malignant (0) 샘플 개수: {counts[0]}") 212
-# print(f"benign (1) 샘플 개수: {counts[1]}") 357
-# print(f"총합(샘플 수): {counts[0] + counts[1]} (전체 샘플 수 n_samples = {n_samples})") 569
+print(f"malignant (0) 샘플 개수: {counts[0]}")  # 212
+print(f"benign (1) 샘플 개수: {counts[1]}")  # 357
+print(
+    f"총합(샘플 수): {counts[0] + counts[1]} (전체 샘플 수 n_samples = {n_samples})"
+)  # 569
 
 # 1-c. 결측 값이 있는 feature가 있는지 확인하세요
 
@@ -46,6 +48,12 @@ for i, row in enumerate(data):
     for j, feature in enumerate(row):
         if feature is None or str(feature).strip() in ["", "NA", "nan"]:
             print(f"결측값: row {i}, column {j}, value: {feature}")
+
+# 1-c. 결측값 확인 (numpy 사용시)
+if np.isnan(X).any():
+    print("결측값 존재")
+else:
+    print("결측값 없음")
 
 """
 # 1-d. 평균(mean) 관련 feature들의 기술 통계(describe)를 확인하고 주요 특징을 간단히 요약하세요
@@ -319,21 +327,20 @@ print("최고 교차검증 정확도(R): {:.4f}".format(random_search.best_score
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 # --- a) 튜닝 전 모델로 평가 ---
+print("=== 튜닝 전 모델 ===")
 # 1) 학습
 base_clf.fit(X_train, y_train)
 # 2) 예측
 y_pred_base = base_clf.predict(X_test)
 # 3) 지표 출력
-print("=== 튜닝 전 모델 성능 ===")
 print("정확도:", accuracy_score(y_test, y_pred_base))
 print("혼동 행렬:\n", confusion_matrix(y_test, y_pred_base))
 print("분류 리포트:\n", classification_report(y_test, y_pred_base))
 
 # --- b) 튜닝 후 모델로 평가 ---
+print("=== 튜닝 후 모델 (GridSearchCV 기준) ===")
 best_clf = grid.best_estimator_  # GridSearchCV가 찾아준 최적 모델
 y_pred_best = best_clf.predict(X_test)
-
-print("=== 튜닝 후 모델 성능 ===")
 print("정확도:", accuracy_score(y_test, y_pred_best))
 print("혼동 행렬:\n", confusion_matrix(y_test, y_pred_best))
 print("분류 리포트:\n", classification_report(y_test, y_pred_best))
@@ -365,12 +372,12 @@ plt.xlabel("FPR(Fall-out)")
 plt.ylabel("TPR(Recall)")
 
 # 3) 그래프에 두 ROC curve 그리기
-plt.plot(fpr_base, tpr_base, label="base model ROC")
-plt.plot(fpr_best, tpr_best, label="tuned model ROC")
-plt.plot([0, 1], [0, 1], "--", label="random")  # 대각선
+plt.plot(fpr_base, tpr_base, label="Base model ROC")
+plt.plot(fpr_best, tpr_best, label="Tuned model ROC")
+plt.plot([0, 1], [0, 1], "--", label="Random")  # 대각선
 plt.xlabel("FPR")
 plt.ylabel("TPR")
-plt.title("7-a. ROC Curve")
+plt.title("7-a. ROC Curve Comparison")
 plt.legend(loc="lower right")
 plt.show()
 
