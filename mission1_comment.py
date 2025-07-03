@@ -11,8 +11,8 @@ feature_names = cancer.feature_names
 data = load_breast_cancer().data
 num_samples = len(data)  # 569
 num_features = len(data[0])  # 30
-print(f"전체 샘플 수: {num_samples}")
-print(f"feature 수: {num_features}")
+print(f"전체 샘플 수: {num_samples}")  # print("전체 샘플 수:", X.shape[0])
+print(f"feature 수: {num_features}")  # print("특성 수:", X.shape[1])
 
 # 1-b. Target 라벨(양성/악성)의 분포를 확인하세요
 # 일반적으로는 malignant가 positive, 1로 표기되는데 여기에서는 benign이 1로 표기됨
@@ -23,7 +23,7 @@ for t in target:
 print(f"malignant (0) 샘플 개수: {counts[0]}")  # 212
 print(f"benign (1) 샘플 개수: {counts[1]}")  # 357
 print(
-    f"총합(샘플 수): {counts[0] + counts[1]} (전체 샘플 수 n_samples = {n_samples})"
+    f"총합(샘플 수): {counts[0] + counts[1]} (전체 샘플 수 num_samples = {num_samples})"
 )  # 569
 
 # 1-c. 결측 값이 있는 feature가 있는지 확인하세요
@@ -103,8 +103,11 @@ max         0.304000                0.097440
 
 feature_index = list(feature_names).index("mean radius")
 radius = [row[feature_index] for row in data]
-# mean_radius = sum(radius) / len(radius)
-# min_radius, max_radius = min(radius), max(radius)
+mean_radius = sum(radius) / len(radius)
+min_radius, max_radius = min(radius), max(radius)
+print("mean radius 평균:", mean_radius)
+print("mean radius 최소값:", min_radius)
+print("mean radius 최대값:", max_radius)
 # print(sum(radius)) 8038.429000000006
 # print(len(radius)) 569
 # print(mean_radius) 14.127291739894563
@@ -113,6 +116,7 @@ radius = [row[feature_index] for row in data]
 
 # ------------------------------------------------
 # 2. 데이터 시각화
+import matplotlib.pyplot as plt
 
 # texture
 feature_index_texture = list(feature_names).index("mean texture")
@@ -121,21 +125,22 @@ texture = [row[feature_index_texture] for row in data]
 # 2-a. mean radius, mean texture의 분포를 히스토그램으로 시각화하세요
 plt.hist(radius)
 plt.title("Distribution of Mean Radius")
-plt.xlabel("radius")
-plt.ylabel("frequency")
+plt.xlabel("Radius")
+plt.ylabel("Frequency")
 plt.show()
 
 plt.hist(texture)
 plt.title("Distribution of Mean Texture")
-plt.xlabel("texture")
-plt.ylabel("frequency")
+plt.xlabel("Texture")
+plt.ylabel("Frequency")
 plt.show()
 
 # 2-b. mean raidus와 mean texture의 산점도를 그리고, target별로 색깔을 다르게 구분하세요
 plt.scatter(radius, texture, c=target)
 plt.title("Mean Radius vs Mean Texture")
-plt.xlabel("mean radius")
-plt.ylabel("mean texture")
+plt.xlabel("Mean radius")
+plt.ylabel("Mean texture")
+plt.colorbar(label="Target (0=malignant, 1=benign)")
 plt.show()
 
 # 2-c. target 라벨 별로 mean area의 분포 차이를 박스플롯으로 나타내세요
@@ -182,7 +187,6 @@ clf = RandomForestClassifier(random_state=77)
 clf.fit(X_train, y_train)
 
 # 4-b. 테스트 데이터에 대해 예측을 수행하고, 아래의 평가지표를 출력하세요 (모델이 얼마나 잘 예측했는지 정밀도, 재현율 평가)
-import matplotlib.pyplot as plt
 from sklearn.metrics import (
     accuracy_score,
     auc,

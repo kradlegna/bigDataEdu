@@ -20,8 +20,6 @@ X = cancer.data
 y = cancer.target
 feature_names = cancer.feature_names
 num_features = len(feature_names)
-num_samples = len(X)
-
 
 # 1-a. 샘플 수 및 특성 수 확인
 print("전체 샘플 수:", X.shape[0])
@@ -35,9 +33,7 @@ for t in target:
 
 print(f"malignant (0) 샘플 개수: {counts[0]}")
 print(f"benign (1) 샘플 개수: {counts[1]}")
-print(
-    f"총합(샘플 수): {counts[0] + counts[1]} (전체 샘플 수 num_samples = {num_samples})"
-)
+print(f"총합(샘플 수): {counts[0] + counts[1]}")
 
 # 1-c. 결측값 확인
 missing_count = 0
@@ -102,7 +98,7 @@ print("학습 데이터 수:", len(X_train))
 print("테스트 데이터 수:", len(X_test))
 
 # 4. 기본 모델 학습 및 평가
-base_clf = RandomForestClassifier(random_state=77, n_estimators=100)
+base_clf = RandomForestClassifier(random_state=77)
 base_clf.fit(X_train, y_train)
 y_pred = base_clf.predict(X_test)
 y_proba = base_clf.predict_proba(X_test)[:, 1]
@@ -119,9 +115,8 @@ print("분류 리포트:\n", classification_report(y_test, y_pred))
 
 # 5. 하이퍼파라미터 튜닝 (GridSearchCV)
 param_grid = {
-    "n_estimators": [10, 50, 100],
-    "max_depth": [None, 5, 10],
-    "min_samples_split": [2, 5, 10],
+    "n_estimators": [10, 50, 100, 200],
+    "max_depth": [None, 50, 100, 200],
 }
 grid = GridSearchCV(
     estimator=RandomForestClassifier(random_state=77),
@@ -172,11 +167,19 @@ print("혼동 행렬:\n", confusion_matrix(y_test, y_pred_best))
 print("분류 리포트:\n", classification_report(y_test, y_pred_best))
 
 # 7. ROC curve 시각화
+fpr_base, tpr_base, _ = roc_curve(y_test, base_clf.predict_proba(X_test)[:, 1])
+auc_base = auc(fpr_base, tpr_base)
+
+fpr_tuned, tpr_tuned, _ = roc_curve(y_test, best_clf.predict_proba(X_test)[:, 1])
+auc_tuned = auc(fpr_tuned, tpr_tuned)
+
 plt.plot(
-    *roc_curve(y_test, base_clf.predict_proba(X_test)[:, 1])[:2], label="Base Model"
+    *roc_curve(y_test, base_clf.predict_proba(X_test)[:, 1])[:2],
+    label=f"Base Model (AUC = {auc_base:.3f})",
 )
 plt.plot(
-    *roc_curve(y_test, best_clf.predict_proba(X_test)[:, 1])[:2], label="Tuned Model"
+    *roc_curve(y_test, best_clf.predict_proba(X_test)[:, 1])[:2],
+    label=f"Tuned Model (AUC = {auc_tuned:.3f})",
 )
 plt.plot([0, 1], [0, 1], "--", label="Random")
 plt.xlabel("FPR")
