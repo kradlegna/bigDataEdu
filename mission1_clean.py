@@ -77,7 +77,6 @@ plt.scatter(radius, texture, c=y, cmap="coolwarm", alpha=0.7)
 plt.title("Mean Radius vs Mean Texture")
 plt.xlabel("Mean Radius")
 plt.ylabel("Mean Texture")
-plt.colorbar(label="Target (0=malignant, 1=benign)")
 plt.show()
 
 # 2-c. mean area의 라벨별 분포 (박스플롯)
