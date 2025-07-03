@@ -199,8 +199,9 @@ values = [imp for name, imp in top10]
 
 # 8-b. 상위 10개의 중요 feature를 수평 막대 그래프로 시각화하세요 (x축: 중요도 / y축: feature 이름)
 # 4) 수평 막대그래프로 시각화
-plt.figure(figsize=(6, 4))
+plt.figure(figsize=(8, 4))
 plt.barh(labels[::-1], values[::-1])  # 뒤집어서 가장 중요한 게 위에 오도록
 plt.xlabel("Feature importance")
 plt.title("Top 10 Important Feature")
+plt.tight_layout()
 plt.show()

@@ -8,7 +8,8 @@ feature_names = cancer.feature_names
 
 # 1-a. 전체 샘플 수와 feature 개수는 각각 몇 개인가요?
 # 샘플 수, 특성 수
-data = load_breast_cancer().data
+cancer = load_breast_cancer()
+data = cancer.data
 num_samples = len(data)  # 569
 num_features = len(data[0])  # 30
 print(f"전체 샘플 수: {num_samples}")  # print("전체 샘플 수:", X.shape[0])
@@ -142,6 +143,17 @@ plt.xlabel("Mean radius")
 plt.ylabel("Mean texture")
 plt.colorbar(label="Target (0=malignant, 1=benign)")
 plt.show()
+
+"""
+연속적인 값이 아닌 이진범주형일경우 아래 이용
+plt.scatter(radius[y == 0], texture[y == 0], color='red', alpha=0.7, label='Malignant (0)')
+plt.scatter(radius[y == 1], texture[y == 1], color='blue', alpha=0.7, label='Benign (1)')
+plt.title("Mean Radius vs Mean Texture")
+plt.xlabel("Mean radius")
+plt.ylabel("Mean texture")
+plt.legend(loc="upper right")
+plt.show()
+"""
 
 # 2-c. target 라벨 별로 mean area의 분포 차이를 박스플롯으로 나타내세요
 area_idx = list(feature_names).index("mean area")
