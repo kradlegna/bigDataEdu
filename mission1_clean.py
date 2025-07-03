@@ -188,7 +188,6 @@ plt.title("7-a. ROC Curve Comparison")
 plt.legend(loc="lower right")
 plt.show()
 
-
 # 8-a. feature의 중요도를 추출하세요
 importances = best_clf.feature_importances_  # 숫자들
 names = list(feature_names)  # 예: ["mean radius", "mean texture", ...]
