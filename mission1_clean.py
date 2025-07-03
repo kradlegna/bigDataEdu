@@ -184,7 +184,7 @@ plt.plot(
 plt.plot([0, 1], [0, 1], "--", label="Random")
 plt.xlabel("FPR")
 plt.ylabel("TPR")
-plt.title("7-a. ROC Curve Comparison")
+plt.title("7-a,b. ROC Curve Comparison")
 plt.legend(loc="lower right")
 plt.show()
 
