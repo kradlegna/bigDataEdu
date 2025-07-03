@@ -19,16 +19,14 @@ cancer = load_breast_cancer()
 X = cancer.data
 y = cancer.target
 feature_names = cancer.feature_names
-num_features = len(feature_names)
 
 # 1-a. 샘플 수 및 특성 수 확인
 print("전체 샘플 수:", X.shape[0])
 print("특성 수:", X.shape[1])
 
 # 1-b. 라벨 분포 확인 (0: malignant, 1: benign)
-target = load_breast_cancer().target
 counts = {0: 0, 1: 0}
-for t in target:
+for t in y:
     counts[t] += 1
 
 print(f"malignant (0) 샘플 개수: {counts[0]}")

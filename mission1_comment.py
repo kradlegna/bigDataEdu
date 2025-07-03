@@ -36,13 +36,13 @@ for row in data:
         if x is None:
             found_missing = True
             missing_count += 1
-"""
-found_missing = False
-if found_missing:
-    print(missing_count)
-else:
-    print("no missing_count")  # no missing_count
 
+if missing_count != 0:
+    print("결측값 존재")
+else:
+    print("결측값 없음")
+
+"""
 X = data.data  # numpy array지만 리스트처럼 반복 가능
 
 for i, row in enumerate(data):
@@ -157,6 +157,8 @@ plt.show()
 
 # 2-c. target 라벨 별로 mean area의 분포 차이를 박스플롯으로 나타내세요
 area_idx = list(feature_names).index("mean area")
+# area = X[:, area_idx]
+# plt.boxplot([area[y == 1], area[y == 0]], labels=["benign", "malignant"])
 area_positive = []  # target == 1 (benign)
 area_negative = []  # target == 0 (malignant)
 for row, t in zip(data, target):
@@ -166,7 +168,8 @@ for row, t in zip(data, target):
         area_negative.append(row[area_idx])
 
 plt.boxplot([area_positive, area_negative], labels=["benign", "malignant"])
-plt.title("mean area")
+plt.title("Distribution of Mean Area by Class")
+plt.ylabel("Mean Area")
 plt.show()
 
 # 3. 머신러닝 데이터 준비
@@ -302,8 +305,8 @@ grid_search = GridSearchCV(
 grid.fit(X_train, y_train)
 
 # 가장 좋은 옵션과 그때의 교차검증 정확도 출력
-print("최적 하이퍼파라미터:", grid.best_params_)
-print("최고 CV 정확도    :", grid.best_score_)
+print("최적 하이퍼파라미터 (Grid)", grid.best_params_)
+print("최고 CV 정확도 (Grid)    :", grid.best_score_)
 
 """
 # RandomizedSearchCV
