@@ -377,8 +377,10 @@ plt.title("ROC curve")
 plt.xlabel("FPR(Fall-out)")
 plt.ylabel("TPR(Recall)")
 # 3) 그래프에 두 ROC curve 그리기
-plt.plot(fpr_base, tpr_base, label="Base model ROC")
-plt.plot(fpr_best, tpr_best, label="Tuned model ROC")
+auc_base = auc(fpr_base, tpr_base)
+auc_best = auc(fpr_best, tpr_best)
+plt.plot(fpr_base, tpr_base, label=f"Base model ROC (AUC = {auc_base:.3f})")
+plt.plot(fpr_best, tpr_best, label=f"Tuned model ROC (AUC = {auc_best:.3f})")
 plt.plot([0, 1], [0, 1], "--", label="Random")  # 대각선
 plt.xlabel("FPR")
 plt.ylabel("TPR")
@@ -387,8 +389,6 @@ plt.legend(loc="lower right")
 plt.show()
 
 # 7-b. 각 모델의 AUC를 함께 출력하여 비교하세요
-auc_base = auc(fpr_base, tpr_base)
-auc_best = auc(fpr_best, tpr_best)
 print("7-b. 각 모델의 AUC 비교")
 print(f"  - base model AUC : {auc_base:.3f}")
 print(f"  - tuned model AUC : {auc_best:.3f}")
@@ -419,4 +419,5 @@ plt.figure(figsize=(6, 4))
 plt.barh(labels[::-1], values[::-1])  # 뒤집어서 가장 중요한 게 위에 오도록
 plt.xlabel("Feature importance")
 plt.title("top 10 Feature importance")
+plt.tight_layout()
 plt.show()
