@@ -67,6 +67,20 @@ else:
 # 3. 표준 편차(std)를 통해 각 feature의 값들이 얼마나 퍼져있는지 알 수 있으며, 이는 진단에 중요한 영향을 미칠 수 있습니다.
 # 4. 예를 들어, 'radius_mean'은 평균 반경을 나타내며, 이 값이 클수록 악성 종양일 가능성이 높을 수 있습니다.
 # 5. 판다스 사용시 describe() 결과에서 각 feature의 최솟값, 최댓값, 25/50/75 백분위수를 통해 값의 분포를 더 상세하게 파악할 수 있습니다.
+
+feature_index = list(feature_names).index("mean radius")
+radius = [row[feature_index] for row in data]
+mean_radius = sum(radius) / len(radius)
+min_radius, max_radius = min(radius), max(radius)
+print("mean radius 평균:", mean_radius)
+print("mean radius 최소값:", min_radius)
+print("mean radius 최대값:", max_radius)
+# print(sum(radius)) 8038.429000000006
+# print(len(radius)) 569
+# print(mean_radius) 14.127291739894563
+# print(min_radius) 6.981
+# print(max_radius) 28.11
+
 """"
 print(df[mean_cols].describe()) <- 판다스 사용시 별도의 기술통계를 확인할 수 있음
 
@@ -102,19 +116,6 @@ mean          0.096360          0.104341        0.088799             0.048919
 max         0.304000                0.097440  
 """
 
-feature_index = list(feature_names).index("mean radius")
-radius = [row[feature_index] for row in data]
-mean_radius = sum(radius) / len(radius)
-min_radius, max_radius = min(radius), max(radius)
-print("mean radius 평균:", mean_radius)
-print("mean radius 최소값:", min_radius)
-print("mean radius 최대값:", max_radius)
-# print(sum(radius)) 8038.429000000006
-# print(len(radius)) 569
-# print(mean_radius) 14.127291739894563
-# print(min_radius) 6.981
-# print(max_radius) 28.11
-
 # ------------------------------------------------
 # 2. 데이터 시각화
 import matplotlib.pyplot as plt
@@ -124,41 +125,43 @@ feature_index_texture = list(feature_names).index("mean texture")
 texture = [row[feature_index_texture] for row in data]
 
 # 2-a. mean radius, mean texture의 분포를 히스토그램으로 시각화하세요
-plt.hist(radius)
+plt.hist(radius, bins=20)
 plt.title("Distribution of Mean Radius")
 plt.xlabel("Radius")
 plt.ylabel("Frequency")
 plt.show()
 
-plt.hist(texture)
+plt.hist(texture, bins=20)
 plt.title("Distribution of Mean Texture")
 plt.xlabel("Texture")
 plt.ylabel("Frequency")
 plt.show()
 
 # 2-b. mean raidus와 mean texture의 산점도를 그리고, target별로 색깔을 다르게 구분하세요
+plt.scatter(
+    radius[y == 0], texture[y == 0], color="red", alpha=0.7, label="Malignant (0)"
+)
+plt.scatter(
+    radius[y == 1], texture[y == 1], color="blue", alpha=0.7, label="Benign (1)"
+)
+plt.title("Mean Radius vs Mean Texture")
+plt.xlabel("Mean radius")
+plt.ylabel("Mean texture")
+plt.legend(loc="upper right")
+plt.show()
+
+"""
+연속적인 값이 아닌 이진범주형일경우 아래 이용
 plt.scatter(radius, texture, c=target)
 plt.title("Mean Radius vs Mean Texture")
 plt.xlabel("Mean radius")
 plt.ylabel("Mean texture")
 plt.colorbar(label="Target (0=malignant, 1=benign)")
 plt.show()
-
-"""
-연속적인 값이 아닌 이진범주형일경우 아래 이용
-plt.scatter(radius[y == 0], texture[y == 0], color='red', alpha=0.7, label='Malignant (0)')
-plt.scatter(radius[y == 1], texture[y == 1], color='blue', alpha=0.7, label='Benign (1)')
-plt.title("Mean Radius vs Mean Texture")
-plt.xlabel("Mean radius")
-plt.ylabel("Mean texture")
-plt.legend(loc="upper right")
-plt.show()
 """
 
 # 2-c. target 라벨 별로 mean area의 분포 차이를 박스플롯으로 나타내세요
 area_idx = list(feature_names).index("mean area")
-# area = X[:, area_idx]
-# plt.boxplot([area[y == 1], area[y == 0]], labels=["benign", "malignant"])
 area_positive = []  # target == 1 (benign)
 area_negative = []  # target == 0 (malignant)
 for row, t in zip(data, target):
@@ -171,12 +174,13 @@ plt.boxplot([area_positive, area_negative], labels=["benign", "malignant"])
 plt.title("Distribution of Mean Area by Class")
 plt.ylabel("Mean Area")
 plt.show()
+# area = X[:, area_idx]
+# plt.boxplot([area[y == 1], area[y == 0]], labels=["benign", "malignant"])
 
 # 3. 머신러닝 데이터 준비
 from sklearn.model_selection import train_test_split
 
 # 3-a. 모델링을 위해 학습데이터(Train)과 테스트 데이터(Test)로 나누세요
-
 # 데이터 불러오기
 # cancer = load_breast_cancer()
 
@@ -259,8 +263,8 @@ from sklearn.model_selection import GridSearchCV
 
 # 우리가 비교해 볼 옵션(하이퍼파라미터) 딕셔너리 만들기
 param_grid = {
-    "n_estimators": list(range(1, 100, 20)),  # 숲 속 나무 개수 옵션
-    "max_depth": list(range(1, 10, 2)),  # 나무의 최대 깊이 옵션
+    "n_estimators": [10, 50, 100, 200],  # 숲 속 나무 개수 옵션
+    "max_depth": [1, 50, 100, 200],  # 나무의 최대 깊이 옵션
     # "min_samples_split": list(range(1, 10, 2)),  # 가지를 나눌 최소 샘플 개수 옵션
 }
 
