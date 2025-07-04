@@ -169,7 +169,6 @@ for row, t in zip(data, target):
         area_positive.append(row[area_idx])
     else:
         area_negative.append(row[area_idx])
-
 plt.boxplot([area_positive, area_negative], labels=["benign", "malignant"])
 plt.title("Distribution of Mean Area by Class")
 plt.ylabel("Mean Area")
@@ -266,13 +265,10 @@ param_grid = {
     "n_estimators": [10, 50, 100, 200],  # 숲 속 나무 개수 옵션
     "max_depth": [1, 50, 100, 200],  # 나무의 최대 깊이 옵션
 }
-
 """
-param_grid = {
-    "min_samples_split": list(range(1, 10, 2)),  # 가지를 나눌 최소 샘플 개수 옵션
-    "min_samples_leaf": [1, 2, 4],  # 리프 노드의 최소 샘플 수
-    "bootstrap": [True, False],  # 부트스트랩 샘플링 여부 기본값은 True
-}
+# "min_samples_split": list(range(1, 10, 2)), : 가지를 나눌 최소 샘플 개수 옵션
+# "min_samples_leaf": [1, 2, 4], : 리프 노드의 최소 샘플 수
+# "bootstrap": [True, False], : 부트스트랩 샘플링 여부 기본값은 True
 """
 
 # RandomForest 모델과 GridSearchCV 준비
@@ -287,21 +283,12 @@ grid = GridSearchCV(
     scoring="accuracy",  # 정확도로 제일 높은 옵션을 찾음
 )
 """
-# estimator=model_for_tuning : 어떤 모델의 핲이퍼파라미터를 튜닝할건지?
+# estimator=model_for_tuning : 어떤 모델의 하이퍼파라미터를 튜닝할건지?
 # param_grid=param_grid : 위에서 정의한 하이퍼파라미터 그리드를 전달
 # cv=5 : 5-fold 교차검증 (훈련 데이터를 5개의 폴드로 나누어 5번의 훈련과 검증을 반복해 모델의 성능을 평가)
 # scoring='accuracy' : 모델의 성능을 정확도로 평가
 # n_jobs=-1 : 사용 가능한 모든 CPU코어를 사용해 병렬로 계산을 수행하시오
 # verbose=1 : 튜닝 진행 상황을 자세히 출력
-
-grid_search = GridSearchCV(
-    estimator=model,
-    param_grid=param_grid,  # 시험할 하이퍼파라미터 목록
-    cv=5,  # 5번 나눠서 시험 (교차검증)
-    n_jobs=-1,  # 컴퓨터의 모든 코어를 사용해서 빨리 계산
-    verbose=1,  # 진행 상황 보여주기
-    scoring="accuracy",  # 평가 점수는 정확도로 할게요
-)
 """
 
 # 학습 데이터로 옵션별로 모델 학습 및 교차검증
@@ -380,6 +367,7 @@ from sklearn.metrics import auc, roc_curve
 # (4) 한 그래프에 두 개의 곡선을 그리고, AUC 값을 범례(legend)에 표시
 
 # --- 7-a. ROC curve 시각화 (기본 모델 vs 튜닝 모델) ---
+
 # 1) 각 모델별로 양성(1)일 확률 예측
 y_proba_base = base_clf.predict_proba(X_test)[:, 1]
 y_proba_best = best_clf.predict_proba(X_test)[:, 1]
@@ -410,6 +398,7 @@ auc_best = auc(fpr_best, tpr_best)
 print("7-b. 각 모델의 AUC 비교")
 print(f"  - base model AUC : {auc_base:.3f}")
 print(f"  - tuned model AUC : {auc_best:.3f}")
+
 # 8. Feature select 진행하기
 # 모델이 “어떤 feature가 결정에 제일 중요했는지” 순위를 알아봄 / 상위 10개를 골라서 막대그래프로 보여 주면, 한눈에 어떤 특성이 중요한지 알 수 있음
 # strategy
@@ -423,7 +412,6 @@ print(f"  - tuned model AUC : {auc_best:.3f}")
 # 1) 이름과 중요도를 짝지어서 리스트 만들기
 importances = best_clf.feature_importances_  # 숫자들
 names = list(feature_names)  # 예: ["mean radius", "mean texture", ...]
-
 feat_imp_pairs = list(zip(names, importances))
 
 # 2) 중요도 내림차순 정렬
