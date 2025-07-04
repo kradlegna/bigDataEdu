@@ -201,7 +201,6 @@ from sklearn.ensemble import RandomForestClassifier
 # 4-a. RandomForestClassifier를 사용하여 Train data를 기반으로 분류 모델을 학습시키세요
 # 나무(Decision Tree)를 수십 그루 심어서 숲(Forest)을 만드는 것
 # 각 나무가 “이 샘플은 악성인가 양성인가?”를 배우도록 훈련시키는 과정
-
 clf = RandomForestClassifier(random_state=77)
 clf.fit(X_train, y_train)
 
@@ -251,7 +250,8 @@ print("혼동 행렬:\n", cm)
 
 # 분류 리포트(Classification Report)
 # Precision(정밀도): “양성이라고 한 것 중 옳은 비율” / Recall(재현율): “진짜 양성 중 맞춘 비율” / F1-score: 두 개를 섞은 종합 점수
-print("분류 리포트:\n", classification_report(y_test, y_pred))
+clf_report = classification_report(y_test, y_pred)
+print("분류 리포트:\n", clf_report)
 
 # 5. 하이퍼 파라미터 튜닝
 from sklearn.ensemble import RandomForestClassifier
@@ -265,18 +265,17 @@ from sklearn.model_selection import GridSearchCV
 param_grid = {
     "n_estimators": [10, 50, 100, 200],  # 숲 속 나무 개수 옵션
     "max_depth": [1, 50, 100, 200],  # 나무의 최대 깊이 옵션
-    # "min_samples_split": list(range(1, 10, 2)),  # 가지를 나눌 최소 샘플 개수 옵션
 }
 
 """
 param_grid = {
+    "min_samples_split": list(range(1, 10, 2)),  # 가지를 나눌 최소 샘플 개수 옵션
     "min_samples_leaf": [1, 2, 4],  # 리프 노드의 최소 샘플 수
     "bootstrap": [True, False],  # 부트스트랩 샘플링 여부 기본값은 True
 }
 """
 
 # RandomForest 모델과 GridSearchCV 준비
-
 # CV(Cross-Validation) 데이터를 여러 조각(예: 5개)으로 나눠서
 # 한 조각씩 번갈아가며 시험용(Test)으로 쓰고 나머지로 학습하는 과정을 반복 모델 성능을 공정하게 평가
 # 사람이 하나하나 다 해 보기 힘든 많은 조합을 자동으로 시험해 보고 싶을 때 사용
