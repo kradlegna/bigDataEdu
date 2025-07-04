@@ -72,7 +72,24 @@ plt.ylabel("Frequency")
 plt.show()
 
 # 2-b. 산점도 (target별 색상)
-plt.scatter(radius, texture, c=y, cmap="coolwarm", alpha=0.7)
+# plt.scatter(radius, texture, c=y, cmap="coolwarm", alpha=0.7)
+target = load_breast_cancer().target
+plt.scatter(
+    radius[target == 0],
+    texture[target == 0],
+    color="red",
+    alpha=0.7,
+    label="Malignant (0)",
+)
+plt.scatter(
+    radius[target == 1],
+    texture[target == 1],
+    color="blue",
+    alpha=0.7,
+    label="Benign (1)",
+)
+plt.legend(loc="upper right")
+
 plt.title("Mean Radius vs Mean Texture")
 plt.xlabel("Mean Radius")
 plt.ylabel("Mean Texture")

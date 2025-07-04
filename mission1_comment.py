@@ -121,7 +121,6 @@ import matplotlib.pyplot as plt
 # texture
 feature_index_texture = list(feature_names).index("mean texture")
 texture = [row[feature_index_texture] for row in data]
-
 # 2-a. mean radius, mean texture의 분포를 히스토그램으로 시각화하세요
 plt.hist(radius, bins=20)
 plt.title("Distribution of Mean Radius")
@@ -140,16 +139,30 @@ plt.scatter(radius, texture, c=target)
 plt.title("Mean Radius vs Mean Texture")
 plt.xlabel("Mean radius")
 plt.ylabel("Mean texture")
-plt.colorbar(label="Target (0=malignant, 1=benign)")
+# plt.colorbar(label="Target (0=malignant, 1=benign)")
 plt.show()
 
 """
-연속적인 값이 아닌 이진범주형일경우 아래 이용
+연속적인 값이 아닌 이진범주형일경우 아래 이용(numpy이용 권장)
+X = cancer.data
+y = cancer.target
+texture_idx = list(feature_names).index("mean texture")
+texture = X[:, texture_idx]
+radius_idx = list(feature_names).index("mean radius")
+radius = X[:, radius_idx]
 plt.scatter(
-    radius[y == 0], texture[y == 0], color="red", alpha=0.7, label="Malignant (0)"
+    radius[y == 0],
+    texture[y == 0],
+    color="red",
+    alpha=0.7,
+    label="Malignant (0)",
 )
 plt.scatter(
-    radius[y == 1], texture[y == 1], color="blue", alpha=0.7, label="Benign (1)"
+    radius[y == 1],
+    texture[y == 1],
+    color="blue",
+    alpha=0.7,
+    label="Benign (1)",
 )
 plt.title("Mean Radius vs Mean Texture")
 plt.xlabel("Mean radius")
@@ -372,7 +385,7 @@ y_proba_best = best_clf.predict_proba(X_test)[:, 1]
 # 2) FPR(False Positive Rate)과 TPR(True Positive Rate) 계산
 fpr_base, tpr_base, _ = roc_curve(y_test, y_proba_base)
 fpr_best, tpr_best, _ = roc_curve(y_test, y_proba_best)
-plt.scatter(fpr_best, tpr_best)
+# plt.scatter(fpr_best, tpr_best)
 plt.title("ROC curve")
 plt.xlabel("FPR(Fall-out)")
 plt.ylabel("TPR(Recall)")
