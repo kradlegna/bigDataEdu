@@ -8,7 +8,6 @@ feature_names = cancer.feature_names
 
 # 1-a. 전체 샘플 수와 feature 개수는 각각 몇 개인가요?
 # 샘플 수, 특성 수
-cancer = load_breast_cancer()
 data = cancer.data
 num_samples = len(data)  # 569
 num_features = len(data[0])  # 30
@@ -28,7 +27,6 @@ print(
 )  # 569
 
 # 1-c. 결측 값이 있는 feature가 있는지 확인하세요
-
 missing_count = 0
 
 for row in data:
@@ -138,6 +136,15 @@ plt.ylabel("Frequency")
 plt.show()
 
 # 2-b. mean raidus와 mean texture의 산점도를 그리고, target별로 색깔을 다르게 구분하세요
+plt.scatter(radius, texture, c=target)
+plt.title("Mean Radius vs Mean Texture")
+plt.xlabel("Mean radius")
+plt.ylabel("Mean texture")
+plt.colorbar(label="Target (0=malignant, 1=benign)")
+plt.show()
+
+"""
+연속적인 값이 아닌 이진범주형일경우 아래 이용
 plt.scatter(
     radius[y == 0], texture[y == 0], color="red", alpha=0.7, label="Malignant (0)"
 )
@@ -148,15 +155,6 @@ plt.title("Mean Radius vs Mean Texture")
 plt.xlabel("Mean radius")
 plt.ylabel("Mean texture")
 plt.legend(loc="upper right")
-plt.show()
-
-"""
-연속적인 값이 아닌 이진범주형일경우 아래 이용
-plt.scatter(radius, texture, c=target)
-plt.title("Mean Radius vs Mean Texture")
-plt.xlabel("Mean radius")
-plt.ylabel("Mean texture")
-plt.colorbar(label="Target (0=malignant, 1=benign)")
 plt.show()
 """
 
@@ -281,14 +279,14 @@ grid = GridSearchCV(
     param_grid=param_grid,
     cv=5,  # 데이터를 5조각으로 나눠서 5번 검증
     scoring="accuracy",  # 정확도로 제일 높은 옵션을 찾음
+    n_jobs=-1,  # 사용 가능한 모든 CPU코어를 사용해 병렬로 계산을 수행하시오
+    verbose=1,  # 튜닝 진행 상황을 자세히 출력
 )
 """
 # estimator=model_for_tuning : 어떤 모델의 하이퍼파라미터를 튜닝할건지?
 # param_grid=param_grid : 위에서 정의한 하이퍼파라미터 그리드를 전달
 # cv=5 : 5-fold 교차검증 (훈련 데이터를 5개의 폴드로 나누어 5번의 훈련과 검증을 반복해 모델의 성능을 평가)
 # scoring='accuracy' : 모델의 성능을 정확도로 평가
-# n_jobs=-1 : 사용 가능한 모든 CPU코어를 사용해 병렬로 계산을 수행하시오
-# verbose=1 : 튜닝 진행 상황을 자세히 출력
 """
 
 # 학습 데이터로 옵션별로 모델 학습 및 교차검증
@@ -296,7 +294,7 @@ grid.fit(X_train, y_train)
 
 # 가장 좋은 옵션과 그때의 교차검증 정확도 출력
 print("최적 하이퍼파라미터 (Grid)", grid.best_params_)
-print("최고 CV 정확도 (Grid)    :", grid.best_score_)
+print("최고 CV 정확도 (Grid) :", grid.best_score_)
 
 """
 # RandomizedSearchCV
@@ -371,16 +369,13 @@ from sklearn.metrics import auc, roc_curve
 # 1) 각 모델별로 양성(1)일 확률 예측
 y_proba_base = base_clf.predict_proba(X_test)[:, 1]
 y_proba_best = best_clf.predict_proba(X_test)[:, 1]
-
 # 2) FPR(False Positive Rate)과 TPR(True Positive Rate) 계산
 fpr_base, tpr_base, _ = roc_curve(y_test, y_proba_base)
 fpr_best, tpr_best, _ = roc_curve(y_test, y_proba_best)
-
 plt.scatter(fpr_best, tpr_best)
 plt.title("ROC curve")
 plt.xlabel("FPR(Fall-out)")
 plt.ylabel("TPR(Recall)")
-
 # 3) 그래프에 두 ROC curve 그리기
 plt.plot(fpr_base, tpr_base, label="Base model ROC")
 plt.plot(fpr_best, tpr_best, label="Tuned model ROC")
@@ -394,7 +389,6 @@ plt.show()
 # 7-b. 각 모델의 AUC를 함께 출력하여 비교하세요
 auc_base = auc(fpr_base, tpr_base)
 auc_best = auc(fpr_best, tpr_best)
-
 print("7-b. 각 모델의 AUC 비교")
 print(f"  - base model AUC : {auc_base:.3f}")
 print(f"  - tuned model AUC : {auc_best:.3f}")
@@ -408,15 +402,12 @@ print(f"  - tuned model AUC : {auc_best:.3f}")
 # (4) matplotlib의 barh(수평 막대)로 그리기
 
 # 8-a. feature의 중요도를 추출하세요
-
 # 1) 이름과 중요도를 짝지어서 리스트 만들기
 importances = best_clf.feature_importances_  # 숫자들
 names = list(feature_names)  # 예: ["mean radius", "mean texture", ...]
 feat_imp_pairs = list(zip(names, importances))
-
 # 2) 중요도 내림차순 정렬
 feat_imp_pairs.sort(key=lambda x: x[1], reverse=True)
-
 # 3) 상위 10개 뽑기
 top10 = feat_imp_pairs[:10]
 labels = [name for name, imp in top10]
