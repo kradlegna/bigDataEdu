@@ -73,6 +73,7 @@ min_radius, max_radius = min(radius), max(radius)
 print("mean radius 평균:", mean_radius)
 print("mean radius 최소값:", min_radius)
 print("mean radius 최대값:", max_radius)
+
 # print(sum(radius)) 8038.429000000006
 # print(len(radius)) 569
 # print(mean_radius) 14.127291739894563
@@ -121,6 +122,7 @@ import matplotlib.pyplot as plt
 # texture
 feature_index_texture = list(feature_names).index("mean texture")
 texture = [row[feature_index_texture] for row in data]
+
 # 2-a. mean radius, mean texture의 분포를 히스토그램으로 시각화하세요
 plt.hist(radius, bins=20)
 plt.title("Distribution of Mean Radius")
@@ -143,7 +145,7 @@ plt.ylabel("Mean texture")
 plt.show()
 
 """
-연속적인 값이 아닌 이진범주형일경우 아래 이용(numpy이용 권장)
+target값이 연속적이지 않은 범주형일경우 아래 이용(numpy이용 권장)
 X = cancer.data
 y = cancer.target
 texture_idx = list(feature_names).index("mean texture")
