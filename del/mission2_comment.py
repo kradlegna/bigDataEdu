@@ -1,5 +1,5 @@
 # 1. iris.csv 파일을 열어서 데이터를 한 번에 읽고 저장
-all_data = ()  # 꽃 정보를 담을 리스트 만들기
+all_data = []  # 꽃 정보를 담을 리스트 만들기
 
 with open("iris.csv", "r") as file:  # iris파일을 열어서 file이라는 이름으로 사용
     header = (
